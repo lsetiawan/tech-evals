@@ -5,9 +5,10 @@ LiteLLM is a unified interface for 100+ LLMs with features including load balanc
 ## Overview
 
 This evaluation sets up LiteLLM with:
-- **LiteLLM Proxy**: Main service providing unified API access
+- **LiteLLM Proxy**: Main service providing unified API access with Azure OpenAI endpoints
 - **PostgreSQL**: Database for storing model configurations and metrics
 - **Prometheus**: Metrics collection and monitoring
+- **S3 Logging**: Automatic logging of all requests to S3 for auditing and analysis
 
 ## Quick Start
 
@@ -40,30 +41,50 @@ This evaluation sets up LiteLLM with:
 
 ## Configuration
 
-### Adding API Keys
+### Environment Variables
 
-Edit the `.env` file to add your API keys. Example:
+This setup uses a `config.yaml` file for configuration. Copy the `.env.example` to `.env` and configure your credentials:
 
 ```bash
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
+cp .env.example .env
+# Edit .env with your values
 ```
 
-### Using config.yaml (Optional)
+Required environment variables:
+- **Azure OpenAI**: `AZURE_API_KEY`, `AZURE_API_BASE`, `AZURE_API_VERSION`
+- **S3 Logging**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_REGION_NAME`, `S3_PATH_PREFIX`
 
-For advanced configuration, you can create a `config.yaml` file and uncomment the volume mount and command in `docker-compose.yml`:
+### config.yaml
 
+The included `config.yaml` provides:
+
+**Azure OpenAI Models:**
+- `azure-gpt-4` - GPT-4 via Azure OpenAI
+- `azure-gpt-35-turbo` - GPT-3.5 Turbo via Azure OpenAI
+
+**S3 Logging:**
+- Automatically logs all successful and failed requests to S3
+- Logs are stored in the configured S3 bucket with optional path prefix
+
+**Example config.yaml structure:**
 ```yaml
 model_list:
-  - model_name: gpt-4
+  - model_name: azure-gpt-4
     litellm_params:
-      model: openai/gpt-4
-      api_key: os.environ/OPENAI_API_KEY
-  - model_name: claude-3
-    litellm_params:
-      model: anthropic/claude-3-opus-20240229
-      api_key: os.environ/ANTHROPIC_API_KEY
+      model: azure/gpt-4
+      api_base: os.environ/AZURE_API_BASE
+      api_key: os.environ/AZURE_API_KEY
+      api_version: os.environ/AZURE_API_VERSION
+
+litellm_settings:
+  success_callback: ["s3"]
+  failure_callback: ["s3"]
+  s3_callback_params:
+    s3_bucket_name: os.environ/S3_BUCKET_NAME
+    s3_region_name: os.environ/S3_REGION_NAME
 ```
+
+You can modify `config.yaml` to add more models or change logging behavior.
 
 ## Usage Examples
 
