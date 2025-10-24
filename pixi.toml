@@ -11,3 +11,29 @@ docker-compose = "*"
 [tasks]
 # Task to list all available evaluations
 list-evals = "ls -d */ 2>/dev/null || echo 'No evaluations found'"
+
+# LiteLLM environment
+[environments]
+litellm = ["litellm"]
+
+[feature.litellm.dependencies]
+docker-compose = "*"
+
+[feature.litellm.tasks]
+# Start LiteLLM services
+up = { cmd = "docker-compose up -d", cwd = "litellm" }
+
+# Stop LiteLLM services
+down = { cmd = "docker-compose down", cwd = "litellm" }
+
+# View logs
+logs = { cmd = "docker-compose logs -f", cwd = "litellm" }
+
+# Check service status
+status = { cmd = "docker-compose ps", cwd = "litellm" }
+
+# Restart services
+restart = { cmd = "docker-compose restart", cwd = "litellm" }
+
+# Clean up volumes (WARNING: This will delete all data)
+clean = { cmd = "docker-compose down -v", cwd = "litellm" }
