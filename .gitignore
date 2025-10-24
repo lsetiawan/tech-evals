@@ -1,0 +1,31 @@
+# Pixi environments
+.pixi/
+*.pixi.lock
+
+# Environment files
+.env
+*.env.local
+
+# Docker volumes and data
+**/postgres_data/
+**/prometheus_data/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
