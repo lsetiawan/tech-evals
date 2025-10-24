@@ -16,9 +16,6 @@ list-evals = "ls -d */ 2>/dev/null || echo 'No evaluations found'"
 [environments]
 litellm = ["litellm"]
 
-[feature.litellm.dependencies]
-docker-compose = "*"
-
 [feature.litellm.tasks]
 # Start LiteLLM services
 up = { cmd = "docker-compose up -d", cwd = "litellm" }
