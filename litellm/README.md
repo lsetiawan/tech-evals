@@ -82,6 +82,13 @@ litellm_settings:
   s3_callback_params:
     s3_bucket_name: os.environ/S3_BUCKET_NAME
     s3_region_name: os.environ/S3_REGION_NAME
+    s3_aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+    s3_aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+    s3_path: os.environ/S3_PATH_PREFIX
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: os.environ/DATABASE_URL
 ```
 
 You can modify `config.yaml` to add more models or change logging behavior.
