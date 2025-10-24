@@ -8,7 +8,8 @@ This evaluation sets up LiteLLM with:
 - **LiteLLM Proxy**: Main service providing unified API access with Azure OpenAI endpoints
 - **PostgreSQL**: Database for storing model configurations and metrics
 - **Prometheus**: Metrics collection and monitoring
-- **S3 Logging**: Automatic logging of all requests to S3 for auditing and analysis
+- **MinIO**: Local S3-compatible object storage for logging
+- **S3 Logging**: Automatic logging of all requests to MinIO (local S3) for auditing and analysis
 
 ## Quick Start
 
@@ -38,6 +39,7 @@ This evaluation sets up LiteLLM with:
    - LiteLLM UI: http://localhost:4000
    - LiteLLM API: http://localhost:4000/docs (Swagger documentation)
    - Prometheus: http://localhost:9090
+   - MinIO Console: http://localhost:9001 (username: minioadmin, password: minioadmin)
 
 ## Configuration
 
@@ -52,7 +54,15 @@ cp .env.example .env
 
 Required environment variables:
 - **Azure OpenAI**: `AZURE_API_KEY`, `AZURE_API_BASE`, `AZURE_API_VERSION`
-- **S3 Logging**: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET_NAME`, `S3_REGION_NAME`, `S3_PATH_PREFIX`
+- **S3 Logging with MinIO (default)**: 
+  - `AWS_ACCESS_KEY_ID=minioadmin`
+  - `AWS_SECRET_ACCESS_KEY=minioadmin`
+  - `S3_BUCKET_NAME=litellm-logs`
+  - `S3_REGION_NAME=us-east-1`
+  - `S3_PATH_PREFIX=litellm-logs/`
+  - `AWS_ENDPOINT_URL=http://minio:9000`
+
+**Note**: The default setup uses MinIO for local S3-compatible storage. For production with AWS S3, update the credentials and remove the `AWS_ENDPOINT_URL` variable.
 
 ### config.yaml
 
@@ -63,8 +73,9 @@ The included `config.yaml` provides:
 - `azure-gpt-35-turbo` - GPT-3.5 Turbo via Azure OpenAI
 
 **S3 Logging:**
-- Automatically logs all successful and failed requests to S3
+- Automatically logs all successful and failed requests to MinIO (local S3-compatible storage)
 - Logs are stored in the configured S3 bucket with optional path prefix
+- MinIO provides a web console at http://localhost:9001 for browsing logs
 
 **Example config.yaml structure:**
 ```yaml
@@ -84,6 +95,7 @@ litellm_settings:
     s3_region_name: os.environ/S3_REGION_NAME
     s3_aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
     s3_aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+    s3_endpoint_url: os.environ/AWS_ENDPOINT_URL  # MinIO endpoint
     s3_path: os.environ/S3_PATH_PREFIX
 
 general_settings:
@@ -135,6 +147,26 @@ If you have Pixi installed, you can use these convenience commands:
 - `pixi run clean` - Stop services and remove volumes (⚠️ deletes data)
 
 ## Monitoring
+
+### MinIO Object Storage
+
+Access the MinIO Console at http://localhost:9001 to:
+- Browse and manage S3 buckets
+- View logs stored by LiteLLM
+- Create and manage buckets
+- Monitor storage usage
+
+Default credentials:
+- Username: `minioadmin`
+- Password: `minioadmin`
+
+**Note**: You'll need to create the `litellm-logs` bucket (or the bucket name specified in your `.env` file) before LiteLLM can store logs. You can create it via the MinIO Console or using the MinIO CLI:
+
+```bash
+# Using docker exec to access MinIO CLI
+docker exec litellm_minio mc alias set local http://localhost:9000 minioadmin minioadmin
+docker exec litellm_minio mc mb local/litellm-logs
+```
 
 ### Prometheus Metrics
 
