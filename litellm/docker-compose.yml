@@ -35,9 +35,9 @@ services:
     environment:
       POSTGRES_DB: litellm
       POSTGRES_USER: llmproxy
-      POSTGRES_PASSWORD: dbpassword9090
+      POSTGRES_PASSWORD: dbpassword9090  # Change this for production use
     ports:
-      - "5432:5432"
+      - "5432:5432"  # Exposed for debugging/inspection; remove if not needed
     volumes:
       - postgres_data:/var/lib/postgresql/data # Persists Postgres data across container restarts
     healthcheck:

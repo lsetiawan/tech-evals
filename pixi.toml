@@ -10,4 +10,4 @@ docker-compose = "*"
 
 [tasks]
 # Task to list all available evaluations
-list-evals = "ls -d */ 2>/dev/null | grep -v node_modules || echo 'No evaluations found'"
+list-evals = "ls -d */ 2>/dev/null || echo 'No evaluations found'"
