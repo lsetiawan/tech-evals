@@ -1,0 +1,13 @@
+[project]
+name = "tech-evals"
+version = "0.1.0"
+description = "Repository for evaluating various technologies and software"
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64", "win-64"]
+
+[dependencies]
+docker-compose = "*"
+
+[tasks]
+# Task to list all available evaluations
+list-evals = "ls -d */ 2>/dev/null || echo 'No evaluations found'"
